@@ -7,18 +7,18 @@ class Database {
 
 	showAllDepartments() {
 		return this.connection.promise().query(
-			'SELECT departments.id, departments.dept_name FROM departments ORDER BY departments.id ASC;')
+			'SELECT departments.id, departments.name FROM departments ORDER BY departments.id ASC;')
 	}
 
 	showAllRoles() {
 		return this.connection.promise().query(
-			'SELECT roles.id, roles.title, roles.salary, roles.department_id, departments.name FROM roles JOIN departments ON roles.departments = departments.id ORDER BY roles.id ASC;'
+			'SELECT roles.title, roles.id, departments.name, roles.salary FROM roles JOIN departments ON roles.departments = departments.id ORDER BY roles.id ASC;'
 			)
 	}
 
 	showAllEmployees() {
 		return this.connection.promise().query(
-			'SELECT employees.id, employees.first_name, employees.role_id, employees.manager_id FROM employees ORDER BY employees.id ASC;'
+			'SELECT employee.id, employee.first_name, employee.last_name, employee.role_id, roles.title, departments.name, roles.salary, employee.manager_id FROM employee JOIN roles ON employee.role_id = roles.id ORDER BY employee.id ASC;'
 			);
 	}
 
