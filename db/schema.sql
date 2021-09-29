@@ -14,6 +14,5 @@ CREATE TABLE roles (
   salary DECIMAL UNSIGNED NOT NULL,
   department_id INT UNSIGNED NOT NULL,
   INDEX dep_ind (department_id),
--- below department_id is being used as foreign key
   CONSTRAINT fk_department FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE CASCADE
 );
