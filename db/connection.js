@@ -4,12 +4,11 @@ const connection = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "StowsSQL400SQLstowS!!",
-    database: "employees"
+    database: "employees_db"
 });
 
 connection.connect(function (err) {
     if (err) throw err;
-    
 });
 
 module.exports = connection;
