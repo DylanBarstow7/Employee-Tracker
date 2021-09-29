@@ -83,3 +83,8 @@ function showAllEmployees() {
     })
     .then(() => loadMainPrompts());
 }
+
+function quit(){
+  console.log("Have a nice Day!");
+  process.exit();
+}
