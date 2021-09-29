@@ -27,13 +27,13 @@ function renderOptionList() {
   {
   switch(response.options) {
     case "View all departments":
-      viewAllDepartments();
+      showAllDepartments();
       break;
     case "View all roles":
-      viewAllRoles();
+      showAllRoles();
       break;
     case "View all employees":
-      viewAllEmployees();
+      showAllEmployees();
       break;
 		case "Add a department":
       addDepartment();
