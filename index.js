@@ -1,3 +1,65 @@
 const inquirer = require('inquirer');
 const db =require("./db");
-require('console.table');
+require('console.table')
+
+// creates list of options for the first step of application
+
+function renderOptionList() {
+  inquirer.prompt(
+    [{
+      type: "list",
+      name: "options",
+      message: "Please select from the following:/n",
+      choices: [
+          "view all departments", 
+          "view all roles", 
+          "view all employees", 
+          "add a department", 
+          "add a role", 
+          "add an employee", 
+          "update an employee role"
+        ],
+      },
+    ]
+  )
+// created switch cases for the roles
+  .then((response) =>
+  {
+  switch(response.options) {
+    case "View all departments":
+      viewAllDepartments();
+      break;
+    case "View all roles":
+      viewAllRoles();
+      break;
+    case "View all employees":
+      viewAllEmployees();
+      break;
+		case "Add a department":
+      addDepartment();
+      break;
+    case "Add a role":
+      addRole();
+      break;
+    case "Add an employee":
+      addEmployee();
+      break;
+    case "Update an employee role":
+      addEmployeeRole();
+      break;
+    default:
+        quit();
+      }
+		}	
+  )
+}
+
+function viewAllDepartments() {
+  db.findAllDepartments()
+    .then(([rows]) => {
+      let departments = rows;
+        console.log("\n");
+      console.table(departments);
+    })
+    .then(() => loadMainPrompts());
+}
