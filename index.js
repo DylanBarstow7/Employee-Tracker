@@ -1,8 +1,9 @@
 const inquirer = require('inquirer');
 const db =require("./db");
-require('console.table')
+require('console.table');
 
 // creates list of options for the first step of application
+renderOptionList();
 
 function renderOptionList() {
   inquirer.prompt(
@@ -51,7 +52,7 @@ function renderOptionList() {
         quit();
       }
 		}	
-  )
+  );
 }
 
 function showAllDepartments() {
@@ -83,6 +84,23 @@ function showAllEmployees() {
     })
     .then(() => loadMainPrompts());
 }
+
+function addDepartment(){
+  prompt([
+    {
+      name: "name",
+      message: "Name your department"
+    }
+  ])
+  .then(res => {
+    let name = res;
+    db.addDepartment(name)
+      .then(() => console.log(`Added ${name.name} to the database`))
+      .then(() => renderOptionList())
+  })
+}
+
+
 
 function quit(){
   console.log("Have a nice Day!");
