@@ -54,12 +54,32 @@ function renderOptionList() {
   )
 }
 
-function viewAllDepartments() {
-  db.findAllDepartments()
+function showAllDepartments() {
+  db.showAllDepartments()
     .then(([rows]) => {
       let departments = rows;
         console.log("\n");
       console.table(departments);
+    })
+    .then(() => loadMainPrompts());
+}
+
+function showAllRoles() {
+  db.showAllRoles()
+    .then(([rows]) => {
+      let roles = rows;
+        console.log("\n");
+      console.table(roles);
+    })
+    .then(() => loadMainPrompts());
+}
+
+function showAllEmployees() {
+  db.showAllEmployees()
+    .then(([rows]) => {
+      let employees = rows;
+        console.log("\n");
+      console.table(employees);
     })
     .then(() => loadMainPrompts());
 }
