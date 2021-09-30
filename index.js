@@ -124,7 +124,67 @@ function addRole(){
 }
 
 function addNewEmp(){
+  inquirer.prompt(
+    [{
+      message: "Enter new employees first name\n",
+      name: "first",
+    },
+    {
+      message: "Enter new employees last name\n",
+      name: "last",
+    },]
+  )
+  .then((response)=>{
+    let empFName = response.first;
+    let empLName = response.last;
   
+    db.findAllRoles()
+      .then(([response]) => {
+        const roles = response.map(({id,title})=>({
+          name: title,
+          value: id
+        }));
+        inquirer.prompt(
+          [{
+            type: "list",
+            message: "Choose the new Employee's role\n",
+            name: "role",
+            choices: roles
+          },]
+        )
+        .then(response=>{
+          let newEmpRole = response.role;
+          db.findAllEmps()
+            .then(([response])=> {
+              const employees = response.map(({id,first_name,last_name})=>({
+                name: `${first_name} ${last_name}`,
+                value: id
+              }));
+  
+              inquirer.prompt(
+                [{
+                  type: "list",
+                  message: "Who is the manager of the new Employee?\n",
+                  name: "manager",
+                  choices: employees,
+                },]
+              )
+              .then(response =>{
+                let empManager = response.manager
+                db.createEmp(empFirstName,empLastName,newEmpRole,empManager)
+              })
+              .then(()=>renderOptionList());
+            }
+            
+            
+            
+            )
+
+
+
+        })
+      }
+
 }
 
 
