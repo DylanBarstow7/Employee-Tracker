@@ -7,26 +7,35 @@ class Database {
 
 	findAllDepartments() {
 		return this.connection.promise().query(
-			'SELECT departments.id, departments.name FROM departments ORDER BY departments.id ASC;');
+			'SELECT department.id, department.name FROM department ORDER BY department.id ASC;');
 	}
 
 	findAllRoles() {
 		return this.connection.promise().query(
-			'SELECT roles.title, roles.id, departments.name, roles.salary FROM roles LEFT JOIN departments ON roles.departments = departments.id ORDER BY roles.id ASC;');
+			'SELECT role.title, role.id, department.name, role.salary FROM roles LEFT JOIN department ON roles.department_id = department.id ORDER BY department.id ASC;');
 	}
 
-	findAllEmployees() {
+	// findAllManagers(employeeId) {
+
+	// }
+
+	allEmployees() {
 		return this.connection.promise().query(
-			'SELECT employee.id, employee.first_name, employee.last_name, roles.title, departments.name AS department, roles.salary, CONCAT(manager.first_name," ", manager.last_name) ORDER BY employee.id ASC;');
+			'SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name," ", manager.last_name) ORDER BY employee.id ASC;');
 	}
 
-	createDepartment(departments) {
-		return this.connection.promise().query("INSERT INTO departments SET ?", departments);
+	createDepartment(department) {
+		return this.connection.promise().query("INSERT INTO department SET ?", department);
 	}
 
-	createRole(roles) {
-		return this.connection.promise().query("INSERT INTO roles SET ?", roles);
-}
+	createRole(role) {
+		return this.connection.promise().query("INSERT INTO role SET ?", role);
+	}
 
+	updateEmployeeRole() {
+		return this.connection.promise().query(
+			"UPDATE employee SET role_id = ? WHERE id = ?",
+		)
+	}
 }
 module.exports = new Database(connection);

@@ -51,7 +51,7 @@ function renderOptionList() {
       quit();
       }
 		}
-  )
+  );
 }
 
 function showAllDepartments() {
@@ -67,9 +67,9 @@ function showAllDepartments() {
 function showAllRoles() {
   db.findAllRoles()
     .then(([rows]) => {
-      let roles = rows;
+      let role = rows;
         console.log("\n");
-      console.table(roles);
+      console.table(role);
     })
     .then(() => renderOptionList());
 }
@@ -95,12 +95,50 @@ function addDepartment() {
     let name = res;
     db.createDepartment(name)
       .then(() => console.log(`Added ${name.name} to the database`))
-      .then(() => renderOptionList())
-  })
+      .then(() => renderOptionList());
+  });
 }
 
-
-
+function updateEmployeeRole() {
+  db.allEmployees()
+    .then(([rows]) =>{
+      let employees = rows;
+      const employeeOptions = employees.map(({ id, first_name, last_name }) => ({
+        name: `${first_name} ${last_name}`,
+        value: id
+      }));
+      prompt([
+        {
+          type: "list",
+          name: "employeeId",
+          message: "Which employee's role do you want to update?",
+          choices: employeeOptions
+        }
+      ])
+        .then(res => {
+          let employeeId = res.employeeId;
+          db.findAllRoles()
+            .then(([rows]) => {
+              let roles = rows;
+              const roleOptions = roles.map(({ id, title }) => ({
+                name: title,
+                value: id
+              }));
+              prompt([
+                {
+                  type: "list",
+                  name: "roleId",
+                  message: "Which role do you want to assign the selected employee?",
+                  choices: roleOptions
+                }
+              ])
+                .then(res => db.updateEmployeeRole(employeeId, res.roleId))
+                .then(() => console.log("Updated employee's role"))
+                .then(() => loadMainPrompts())
+            });
+        });
+    })
+}
 function quit(){
   console.log("Have a nice Day!");
   process.exit();
