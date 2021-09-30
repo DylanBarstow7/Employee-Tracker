@@ -44,15 +44,13 @@ function renderOptionList() {
           name: "Quit",
           value: "QUIT"
         }
-        ]
+      ]
     }
-  ]
-)
   // created switch cases for the roles
-  .then((res) => {
+  ]).then(res => {
     let option = res.option;
 
-  switch (option) {
+    switch (option) {
     case "VIEW_ALL_DEPS":
       showAllDeps();
       break;
@@ -60,7 +58,7 @@ function renderOptionList() {
       showAllRoles();
       break;
     case "VIEW_ALL_EMP":
-      showAllEmp();
+      showAllEmps();
       break;
 		case "ADD_DEP":
       addDep();
@@ -78,32 +76,28 @@ function renderOptionList() {
       quit();
       }
 		}
-  );
+  )
 }
 
-function showAllDeps() {
-  db.findAllDeps()
-    .then(([response]) => {
-        console.log("\n");
-      console.table(response);
-    })
-    .then(() => renderOptionList());
+function showAllDeps(){
+  db.findAllDeps().then(([response]) =>{
+    console.table(response)
+  }).then(()=>renderOptionList());
 }
 
 function showAllRoles() {
   db.findAllRoles()
-    .then(([response]) => {
-      console.table(response);
-    })
-    .then(() => renderOptionList());
+    .then(([res]) => {
+      let employees = res;
+      console.table(employees);
+    }).then(() => renderOptionList());
 }
 
-function showAllEmp() {
-  db.findAllEmp()
-    .then(([response]) => {
-      console.table(response);
-    })
-    .then(() => renderOptionList());
+function showAllEmps() {
+  db.findAllEmps()
+    .then(([res]) => {
+      console.table(res);
+    }).then(() => renderOptionList());
 }
 
 function addDep() {
@@ -113,50 +107,51 @@ function addDep() {
       message: "Name your department\n"
     },
   ])
-  .then((response) =>
-    db.createDep(response.name))
+  .then((res) =>
+    db.queryCreateDep(res.name))
       // .then(() => console.log(`Added ${name} to the database`))
-      .then(() => renderOptionList());
+      .then(()=>renderOptionList());
 }
 
 function updEmpRole() {
-  db.findAllEmp()
-    .then(([response]) => {
-      const newEmp = response.map(({ id, first_name, last_name }) => ({
+  db.findAllEmps()
+    .then(([res]) => {
+      const empNewRole = res.map(({ id, first_name, last_name }) => ({
         name: `${first_name} ${last_name}`,
         value: id
       }))
-      inquirer.prompt([
-        {
+      inquirer.prompt(
+        [{
           type: "list",
-          name: "newEmp",
+          name: "employee",
           message: "Enter employees name to update role",
-          choices: employee
-        }
-      ])
-        .then(res => {
-          let empId = res.empId;
-          db.findAllRoles()
-            .then(([response]) => {
-              let roles = response;
-              const roleOptions = roles.map(({ id, title }) => ({
-                name: title,
-                value: id
-              }));
-              prompt([
-                {
-                  type: "list",
-                  name: "roleId",
-                  message: "Choose a role for this employee",
-                  choices: roleOptions
-                }
-              ])
-                .then(res => db.updateEmpRole(empId, res.roleId))
-                .then(() => console.log("Updated employee's role"))
-                .then(() => renderOptionList());
-            });
-        });
-    });
+          choices: empNewRole
+          }
+        ]
+      )
+      .then(res => {
+        let empId = res.empId;
+        db.findAllRoles()
+          .then(([res]) => {
+            let roles = res;
+            const roleOptions = roles.map(({ id, title }) => ({
+              name: title,
+              value: id
+            }));
+            prompt([
+              {
+                type: "list",
+                name: "roleId",
+                message: "Choose a role for this employee",
+                choices: roleOptions
+              }
+            ])
+              .then(res => db.updateEmpRole(empId, res.roleId))
+              .then(() => console.log("Updated employee's role"))
+              .then(() => renderOptionList());
+          });
+      })
+  })
 }
 
 function quit(){
