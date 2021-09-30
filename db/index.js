@@ -42,7 +42,11 @@ class Database {
 		VALUES (?,?,?)`,[title,salary,depId])
 	}
 
-	// create
+	createEmployee(){
+		return this.connection.query(`
+		INSERT INTO roles(title,salary,department_id)
+		VALUES (?,?,?)`,[title,salary,depId])
+	}
 
 	updateEmpRole(roleId,empId) {
 		return this.connection.query(`

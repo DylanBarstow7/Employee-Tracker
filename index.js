@@ -123,13 +123,9 @@ function addRole(){
   })
 }
 
-function addRole(){
-  db.findAllDeps()
-  .then(([response]) =>{
-    const departments = response.map(({id,depName})=>({
-      name: depName,
-      value: id
-    }));
+function addNewEmp(){
+  
+}
 
 
 
@@ -171,7 +167,7 @@ function updEmpRole() {
           });
       })
   })
-}
+
 
 function quit(){
   console.log("Have a nice Day!");
