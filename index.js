@@ -18,7 +18,8 @@ function renderOptionList() {
           "Add a department", 
           "Add a role", 
           "Add an employee", 
-          "Update an employee role,"
+          "Update an employee role",
+          "Quit"
         ],
     },
   ]
@@ -101,7 +102,7 @@ function addDepartment() {
 
 function updateEmployeeRole() {
   db.allEmployees()
-    .then(([rows]) =>{
+    .then(([rows]) => {
       let employees = rows;
       const employeeOptions = employees.map(({ id, first_name, last_name }) => ({
         name: `${first_name} ${last_name}`,
@@ -111,7 +112,7 @@ function updateEmployeeRole() {
         {
           type: "list",
           name: "employeeId",
-          message: "Which employee's role do you want to update?",
+          message: "Choose an employee to update role",
           choices: employeeOptions
         }
       ])
@@ -128,13 +129,13 @@ function updateEmployeeRole() {
                 {
                   type: "list",
                   name: "roleId",
-                  message: "Which role do you want to assign the selected employee?",
+                  message: "Choose a role for this employee",
                   choices: roleOptions
                 }
               ])
                 .then(res => db.updateEmployeeRole(employeeId, res.roleId))
                 .then(() => console.log("Updated employee's role"))
-                .then(() => loadMainPrompts())
+                .then(() => renderOptionList())
             });
         });
     })
