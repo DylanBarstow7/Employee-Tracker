@@ -3,7 +3,11 @@ const db = require("./db/index.js");
 require('console.table');
 
 
-renderOptionList();
+init()
+  
+function init(){
+  renderOptionList();
+}
 
 function renderOptionList() {
   inquirer.prompt([
@@ -40,7 +44,7 @@ function renderOptionList() {
         addRole();
         break;
       case "Add an Employee":
-        addEmp();
+        addNewEmp();
         break;
       case "Update an Employee Role":
         updEmpRole();
@@ -81,15 +85,14 @@ function addDep() {
   ])
   .then((response) =>
     db.createDep(response.depName))
-      // .then(() => console.log(`Added ${name} to the database`))
       .then(()=>renderOptionList());
 }
 
 function addRole(){
-  db.createRole()
+  db.findAllDeps()
   .then(([response]) =>{
-    const department = response.map(({id,depName})=>({
-      name: depName;
+    const departments = response.map(({id,depName})=>({
+      name: depName,
       value: id
     }));
 
@@ -106,15 +109,29 @@ function addRole(){
           name: "salary",
         },
         {
-          type: "input",
+          type: "list",
           message: "Choose new department\n",
-          choices: department,
-          name: "deptId",
-        },
+          choices: departments,
+          name: "depId",
+        }
+      ]
+    )
+      .then((response)=> {
+        db.createRole(response.title,response.salary,response.depId)
+      })
+      .then(()=>renderOptionList());
+  })
+}
+
+function addRole(){
+  db.findAllDeps()
+  .then(([response]) =>{
+    const departments = response.map(({id,depName})=>({
+      name: depName,
+      value: id
+    }));
 
 
-
-      ])
 
 function updEmpRole() {
   db.findAllEmps()
@@ -132,24 +149,23 @@ function updEmpRole() {
           }
         ]
       )
-      .then(response => {
-        let empId = res.empId;
+      .then((response) => {
+        let empId = response.employee;
         db.findAllRoles()
           .then(([response]) => {
-            let roles = response;
-            const roleOptions = roles.map(({ id, title }) => ({
+            const roles = response.map(({ id, title }) => ({
               name: title,
               value: id
-            }));
-            prompt([
+            }))
+            inquirer.prompt([
               {
                 type: "list",
-                name: "roleId",
                 message: "Choose a role for this employee",
-                choices: roleOptions
+                choices: roles,
+                name: "role",
               }
             ])
-              .then(response => db.updateEmpRole(empId, response.roleId))
+              .then(response => db.updateEmpRole(empId, response.role))
               .then(() => console.log("Updated employee's role"))
               .then(() => renderOptionList());
           });
