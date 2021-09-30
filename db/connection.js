@@ -4,7 +4,7 @@ const connection = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "StowsSQL400SQLstowS!!",
-    database: "employees_db"
+    database: "employees"
 });
 
 connection.connect(function (err) {
