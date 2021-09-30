@@ -20,10 +20,6 @@ class Database {
 			roles.id ASC;`)
 	}
 
-	// findAllManagers(employeeId) {
-
-	// }
-
 	findAllEmps() {
 		return this.connection.query(`
 			SELECTemployee.id, employee.first_name, employee.last_name, roles.title, department.depName, roles.salary, employee.manager_id
@@ -34,10 +30,10 @@ class Database {
 			employee.id ASC;`)
 	}
 
-	queryCreateDep(newDep) {
+	createDep(newDep) {
 		return this.connection.query(`
 		INSERT INTO department(depName)
-		VALUES (?)`, newDep)
+		VALUES (?)`,newDep)
 	}
 
 	createRole(roles) {
