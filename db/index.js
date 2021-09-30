@@ -42,10 +42,11 @@ class Database {
 		VALUES (?,?,?)`,[title,salary,depId])
 	}
 
-	createEmployee(){
+	
+	createEmp(first,last,role,manager){
 		return this.connection.query(`
-		INSERT INTO roles(title,salary,department_id)
-		VALUES (?,?,?)`,[title,salary,depId])
+		INSERT INTO employee(first_name,last_name,department_id)
+		VALUES (?,?,?,?)`,[first,last,role,manager])
 	}
 
 	updateEmpRole(roleId,empId) {
