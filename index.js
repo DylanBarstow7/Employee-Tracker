@@ -1,8 +1,8 @@
 const inquirer = require('inquirer');
-const db =require("./db");
+const db = require("./db");
 require('console.table');
 
-// creates list of options for the first step of application
+
 renderOptionList();
 
 function renderOptionList() {
@@ -10,43 +10,69 @@ function renderOptionList() {
     {
       type: "list",
       name: "option",
-      message: "Please select from the following",
+      message: "Please select from the following:\n",
       choices: [
-          "View all departments", 
-          "View all roles", 
-          "View all employees", 
-          "Add a department", 
-          "Add a role", 
-          "Add an employee", 
-          "Update an employee role",
-          "Quit"
-        ],
-    },
+        {  
+          name: "View all departments",
+          value: "VIEW_ALL_DEPS"
+        },
+        {
+          name: "View all roles",
+          value: "VIEW_ALL_ROLES"
+        },
+        {
+          name: "View all employees",
+          value: "VIEW_ALL_EMP"
+        },
+        {
+          name: "Add a department",
+          value: "ADD_DEP"
+        },
+        {
+          name: "Add a role", 
+          value: "ADD_ROLE"
+        },
+        {
+          name:  "Add an employee",
+          value: "ADD_EMP"
+        },
+        {
+          name:  "Update an employee role",
+          value: "UPD_EMP_ROLE"
+        },
+        {
+          name: "Quit",
+          value: "QUIT"
+        }
+        ]
+    }
   ]
 )
   // created switch cases for the roles
-  .then((response) => {
-  switch (response.option) {
-    case "View all departments":
-      showAllDepartments();
+  .then((res) => {
+    let option = res.option;
+
+  switch (option) {
+    case "VIEW_ALL_DEPS":
+      showAllDeps();
       break;
-    case "View all roles":
+    case "VIEW_ALL_ROLES":
       showAllRoles();
       break;
-    case "View all employees":
-      showAllEmployees();
+    case "VIEW_ALL_EMP":
+      showAllEmp();
       break;
-		case "Add a department":
-      addDepartment();
+		case "ADD_DEP":
+      addDep();
       break;
-    case "Add a role":
+    case "ADD_ROLE":
       addRole();
       break;
-    case "Add an employee":
-      addEmployee();
+    case "ADD_EMP":
+      addEmp();
       break;
-    case "Update an employee role":
-      addEmployeeRole();
+    case "UPD_EMP_ROLE":
+      updEmpRole();
       break;
     default:
       quit();
@@ -55,72 +81,64 @@ function renderOptionList() {
   );
 }
 
-function showAllDepartments() {
-  db.findAllDepartments()
-    .then(([rows]) => {
-      let departments = rows;
+function showAllDeps() {
+  db.findAllDeps()
+    .then(([response]) => {
         console.log("\n");
-      console.table(departments);
+      console.table(response);
     })
     .then(() => renderOptionList());
 }
 
 function showAllRoles() {
   db.findAllRoles()
-    .then(([rows]) => {
-      let role = rows;
-        console.log("\n");
-      console.table(role);
+    .then(([response]) => {
+      console.table(response);
     })
     .then(() => renderOptionList());
 }
 
-function showAllEmployees() {
-  db.findAllEmployees()
-    .then(([rows]) => {
-      let employees = rows;
-        console.log("\n");
-      console.table(employees);
+function showAllEmp() {
+  db.findAllEmp()
+    .then(([response]) => {
+      console.table(response);
     })
     .then(() => renderOptionList());
 }
 
-function addDepartment() {
-  prompt([
+function addDep() {
+  inquirer.prompt([
     {
       name: "name",
-      message: "Name your department"
-    }
+      message: "Name your department\n"
+    },
   ])
-  .then(res => {
-    let name = res;
-    db.createDepartment(name)
-      .then(() => console.log(`Added ${name.name} to the database`))
+  .then((response) =>
+    db.createDep(response.name))
+      // .then(() => console.log(`Added ${name} to the database`))
       .then(() => renderOptionList());
-  });
 }
 
-function updateEmployeeRole() {
-  db.allEmployees()
-    .then(([rows]) => {
-      let employees = rows;
-      const employeeOptions = employees.map(({ id, first_name, last_name }) => ({
+function updEmpRole() {
+  db.findAllEmp()
+    .then(([response]) => {
+      const newEmp = response.map(({ id, first_name, last_name }) => ({
         name: `${first_name} ${last_name}`,
         value: id
-      }));
-      prompt([
+      }))
+      inquirer.prompt([
         {
           type: "list",
-          name: "employeeId",
-          message: "Choose an employee to update role",
-          choices: employeeOptions
+          name: "newEmp",
+          message: "Enter employees name to update role",
+          choices: employee
         }
       ])
         .then(res => {
-          let employeeId = res.employeeId;
+          let empId = res.empId;
           db.findAllRoles()
-            .then(([rows]) => {
-              let roles = rows;
+            .then(([response]) => {
+              let roles = response;
               const roleOptions = roles.map(({ id, title }) => ({
                 name: title,
                 value: id
@@ -133,13 +151,14 @@ function updateEmployeeRole() {
                   choices: roleOptions
                 }
               ])
-                .then(res => db.updateEmployeeRole(employeeId, res.roleId))
+                .then(res => db.updateEmpRole(empId, res.roleId))
                 .then(() => console.log("Updated employee's role"))
-                .then(() => renderOptionList())
+                .then(() => renderOptionList());
             });
         });
-    })
+    });
 }
+
 function quit(){
   console.log("Have a nice Day!");
   process.exit();
