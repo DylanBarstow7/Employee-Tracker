@@ -32,10 +32,11 @@ class Database {
 		return this.connection.promise().query("INSERT INTO role SET ?", role);
 	}
 
-	updateEmployeeRole() {
+	updateEmployeeRole(employeeId, roleId) {
 		return this.connection.promise().query(
 			"UPDATE employee SET role_id = ? WHERE id = ?",
-		)
+			[employeeId, roleId]
+		);
 	}
 }
 module.exports = new Database(connection);
