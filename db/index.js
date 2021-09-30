@@ -4,39 +4,41 @@ class Database {
   constructor(connection) {
     this.connection = connection;
 	}
-
-	findAllDepartments() {
-		return this.connection.promise().query(
-			'SELECT department.id, department.name FROM department ORDER BY department.id ASC;');
-	}
+	
+// This calls the index.js f
+	findAllDeps() {
+		console.log("Hello");
+		return this.connection.query(`
+			SELECT department.department_id, department.depName FROM department ORDER BY department.id ASC;`);
+		}
 
 	findAllRoles() {
-		return this.connection.promise().query(
-			'SELECT role.title, role.id, department.name, role.salary FROM roles LEFT JOIN department ON roles.department_id = department.id ORDER BY department.id ASC;');
+		return this.connection.query(`
+			SELECT roles.title, roles.id, department.depName, roles.salary FROM roles JOIN department ON roles.department_id = department.id ORDER BY roles.id ASC;`);
 	}
 
 	// findAllManagers(employeeId) {
 
 	// }
 
-	allEmployees() {
-		return this.connection.promise().query(
-			'SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name," ", manager.last_name) ORDER BY employee.id ASC;');
+	findAllEmp() {
+		return this.connection.query(`
+			SELECT employee.id, employee.first_name, employee.last_name, roles.title, department.name AS department, roles.salary, CONCAT(manager.first_name," ", manager.last_name) ORDER BY employee.id ASC;`);
 	}
 
-	createDepartment(department) {
-		return this.connection.promise().query("INSERT INTO department SET ?", department);
+	createDep(newDep) {
+		return this.connection.query(`INSERT INTO department(dep_name) VALUES (?)`, newDep);
 	}
 
-	createRole(role) {
-		return this.connection.promise().query("INSERT INTO role SET ?", role);
+	createRole(roles) {
+		return this.connection.promise().query(`INSERT INTO role SET ?`, roles);
 	}
 
-	updateEmployeeRole(employeeId, roleId) {
-		return this.connection.promise().query(
-			"UPDATE employee SET role_id = ? WHERE id = ?",
-			[employeeId, roleId]
-		);
+	updateEmpRole(empId, roleId) {
+		return this.connection.promise().query(`
+			UPDATE employee SET role_id = ? WHERE id = ?;`,
+			[empId, roleId]
+		)
 	}
 }
 module.exports = new Database(connection);
