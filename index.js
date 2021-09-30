@@ -1,5 +1,5 @@
 const inquirer = require('inquirer');
-const db = require("./db");
+const db = require("./db/index.js");
 require('console.table');
 
 
@@ -9,71 +9,44 @@ function renderOptionList() {
   inquirer.prompt([
     {
       type: "list",
-      name: "option",
+      name: "options",
       message: "Please select from the following:\n",
       choices: [
-        {  
-          name: "View all departments",
-          value: "VIEW_ALL_DEPS"
-        },
-        {
-          name: "View all roles",
-          value: "VIEW_ALL_ROLES"
-        },
-        {
-          name: "View all employees",
-          value: "VIEW_ALL_EMP"
-        },
-        {
-          name: "Add a department",
-          value: "ADD_DEP"
-        },
-        {
-          name: "Add a role", 
-          value: "ADD_ROLE"
-        },
-        {
-          name:  "Add an employee",
-          value: "ADD_EMP"
-        },
-        {
-          name:  "Update an employee role",
-          value: "UPD_EMP_ROLE"
-        },
-        {
-          name: "Quit",
-          value: "QUIT"
-        }
-      ]
-    }
+        "View All Departments",
+        "View All Roles",
+        "View All Employees",
+        "Add a Department",
+        "Add a Role",
+        "Add an Employee",
+        "Update an Employee Role",
+        "Quit"],
+      },
   // created switch cases for the roles
-  ]).then(res => {
-    let option = res.option;
-
-    switch (option) {
-    case "VIEW_ALL_DEPS":
-      showAllDeps();
-      break;
-    case "VIEW_ALL_ROLES":
-      showAllRoles();
-      break;
-    case "VIEW_ALL_EMP":
-      showAllEmps();
-      break;
-		case "ADD_DEP":
-      addDep();
-      break;
-    case "ADD_ROLE":
-      addRole();
-      break;
-    case "ADD_EMP":
-      addEmp();
-      break;
-    case "UPD_EMP_ROLE":
-      updEmpRole();
-      break;
-    default:
-      quit();
+  ]).then((response) => {
+    switch(response.options) {
+      case "View All Departments":
+        showAllDeps();
+        break;
+      case "View All Roles":
+        showAllRoles();
+        break;
+      case "View All Employees":
+        showAllEmps();
+        break;
+      case "Add a Department":
+        addDep();
+        break;
+      case "Add a Role":
+        addRole();
+        break;
+      case "Add an Employee":
+        addEmp();
+        break;
+      case "Update an Employee Role":
+        updEmpRole();
+        break;
+      default:
+        quit();
       }
 		}
   )
@@ -87,16 +60,15 @@ function showAllDeps(){
 
 function showAllRoles() {
   db.findAllRoles()
-    .then(([res]) => {
-      let employees = res;
-      console.table(employees);
+    .then(([response]) => {
+      console.table(response)
     }).then(() => renderOptionList());
 }
 
 function showAllEmps() {
   db.findAllEmps()
-    .then(([res]) => {
-      console.table(res);
+    .then(([response]) => {
+      console.table(response)
     }).then(() => renderOptionList());
 }
 
@@ -107,16 +79,47 @@ function addDep() {
       message: "Name your department\n"
     },
   ])
-  .then((res) =>
-    db.queryCreateDep(res.name))
+  .then((response) =>
+    db.createDep(response.depName))
       // .then(() => console.log(`Added ${name} to the database`))
       .then(()=>renderOptionList());
 }
 
+function addRole(){
+  db.createRole()
+  .then(([response]) =>{
+    const department = response.map(({id,depName})=>({
+      name: depName;
+      value: id
+    }));
+
+    inquirer.prompt(
+      [
+        {
+          type: "input",
+          message: "Choose new role\n",
+          name: "title",
+        },
+        {
+          type: "input",
+          message: "Choose new salary\n",
+          name: "salary",
+        },
+        {
+          type: "input",
+          message: "Choose new department\n",
+          choices: department,
+          name: "deptId",
+        },
+
+
+
+      ])
+
 function updEmpRole() {
   db.findAllEmps()
-    .then(([res]) => {
-      const empNewRole = res.map(({ id, first_name, last_name }) => ({
+    .then(([response]) => {
+      const empNewRole = response.map(({ id, first_name, last_name }) => ({
         name: `${first_name} ${last_name}`,
         value: id
       }))
@@ -129,11 +132,11 @@ function updEmpRole() {
           }
         ]
       )
-      .then(res => {
+      .then(response => {
         let empId = res.empId;
         db.findAllRoles()
-          .then(([res]) => {
-            let roles = res;
+          .then(([response]) => {
+            let roles = response;
             const roleOptions = roles.map(({ id, title }) => ({
               name: title,
               value: id
@@ -146,7 +149,7 @@ function updEmpRole() {
                 choices: roleOptions
               }
             ])
-              .then(res => db.updateEmpRole(empId, res.roleId))
+              .then(response => db.updateEmpRole(empId, response.roleId))
               .then(() => console.log("Updated employee's role"))
               .then(() => renderOptionList());
           });
