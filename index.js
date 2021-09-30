@@ -6,27 +6,26 @@ require('console.table');
 renderOptionList();
 
 function renderOptionList() {
-  inquirer.prompt(
-    [{
+  inquirer.prompt([
+    {
       type: "list",
-      name: "options",
-      message: "Please select from the following:/n",
+      name: "option",
+      message: "Please select from the following",
       choices: [
-          "view all departments", 
-          "view all roles", 
-          "view all employees", 
-          "add a department", 
-          "add a role", 
-          "add an employee", 
-          "update an employee role"
+          "View all departments", 
+          "View all roles", 
+          "View all employees", 
+          "Add a department", 
+          "Add a role", 
+          "Add an employee", 
+          "Update an employee role,"
         ],
-      },
-    ]
-  )
-// created switch cases for the roles
-  .then((response) =>
-  {
-  switch(response.options) {
+    },
+  ]
+)
+  // created switch cases for the roles
+  .then((response) => {
+  switch (response.option) {
     case "View all departments":
       showAllDepartments();
       break;
@@ -49,43 +48,43 @@ function renderOptionList() {
       addEmployeeRole();
       break;
     default:
-        quit();
+      quit();
       }
-		}	
-  );
+		}
+  )
 }
 
 function showAllDepartments() {
-  db.showAllDepartments()
+  db.findAllDepartments()
     .then(([rows]) => {
       let departments = rows;
         console.log("\n");
       console.table(departments);
     })
-    .then(() => loadMainPrompts());
+    .then(() => renderOptionList());
 }
 
 function showAllRoles() {
-  db.showAllRoles()
+  db.findAllRoles()
     .then(([rows]) => {
       let roles = rows;
         console.log("\n");
       console.table(roles);
     })
-    .then(() => loadMainPrompts());
+    .then(() => renderOptionList());
 }
 
 function showAllEmployees() {
-  db.showAllEmployees()
+  db.findAllEmployees()
     .then(([rows]) => {
       let employees = rows;
         console.log("\n");
       console.table(employees);
     })
-    .then(() => loadMainPrompts());
+    .then(() => renderOptionList());
 }
 
-function addDepartment(){
+function addDepartment() {
   prompt([
     {
       name: "name",
@@ -94,7 +93,7 @@ function addDepartment(){
   ])
   .then(res => {
     let name = res;
-    db.addDepartment(name)
+    db.createDepartment(name)
       .then(() => console.log(`Added ${name.name} to the database`))
       .then(() => renderOptionList())
   })
