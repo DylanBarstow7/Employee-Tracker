@@ -7,13 +7,13 @@ class Database {
 	findAllDeps(){
 		return this.connection.query(`
 			SELECT
-			department_id, department.depName
+			department.id, department.depName
 			FROM
 			department;`)
 		}
 	findAllRoles() {
 		return this.connection.query(`
-			SELECT roles.title, roles.id, department.depName, roles.salary
+			SELECT roles.title, roles.id, department.depName, roles.department_id, roles.salary
 			FROM roles
 			JOIN department ON roles.department_id = department.id
 			ORDER BY
@@ -36,18 +36,20 @@ class Database {
 		VALUES (?)`,newDep)
 	}
 
-	createRole(roles) {
+	createRole(title,salary,depId) {
 		return this.connection.query(`
-		INSERT INTO roles
-		SET ?`, roles);
+		INSERT INTO roles(title,salary,department_id)
+		VALUES (?,?,?)`,[title,salary,depId])
 	}
 
-	updateEmpRole(empId, roleId) {
+	// create
+
+	updateEmpRole(roleId,empId) {
 		return this.connection.query(`
 			UPDATE employee 
 			SET role_id = ? 
 			WHERE id = ?;`,
-			[empId, roleId])
+			[roleId,empId])
 	}
 }
 module.exports = new Database(connection);
