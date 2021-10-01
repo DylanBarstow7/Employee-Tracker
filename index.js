@@ -258,7 +258,7 @@ function updEmpRole() {
           }
       ])
       .then(response => {
-        let employeeId = response.employeeId;
+        let empId = response.empId;
         db.queryAllRoles()
           .then(([rows]) => {
             let roles = rows;
@@ -272,9 +272,9 @@ function updEmpRole() {
                 message: "Choose a role for this employee:\n",
                 choices: roleOptions,
                 name: "roleId",
-              }
+              },
             ])
-              .then(response => db.queryUpdRole(empId, response.role))
+              .then(response => db.queryUpdRole(empId, response.roleId))
               .then(() => console.log("Updated employee's role"))
               .then(() => renderOptionList());
           });
