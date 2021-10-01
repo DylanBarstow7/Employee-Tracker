@@ -7,7 +7,6 @@ class Database {
     this.connection = connection;
 	}
 	queryAllDeps(){
-		console.log("hello");
 		return this.connection.promise().query(`
 			SELECT
 			department.id, department.depName
