@@ -108,35 +108,38 @@ function renderOptionList(){
 
 // when showAllDeps() is called this fxn runs a database query
 function showAllDeps(){
-  db.queryAllDeps().then(([rows])=>{
-    let depts = rows;
+  db.queryAllDeps().then(([response])=>{
+    let departments = response;
     console.log("\n");
-    console.table(depts);
+    console.table(departments);
   }).then(()=>renderOptionList());
 }
 
 function showAllRoles(){
-  db.queryAllRoles().then(([rows])=>{
-      console.table(rows)
+  db.queryAllRoles().then(([response])=>{
+      console.table(response)
     }).then(() => renderOptionList());
 }
 
 function showAllEmps() {
-  db.queryAllEmps().then(([rows]) => {
-      console.table(rows)
+  db.queryAllEmps().then(([response]) => {
+      console.table(response)
     }).then(() => renderOptionList());
 }
 
 function addDep() {
-  inquirer.prompt([
+  prompt([
     {
       name: "name",
-      message: "Name your new department:\n"
+      message: "Name your new department:"
     },
   ])
-  .then((response) =>
-    db.createDep(response.depName))
+  .then((response) => {
+    let name = response;
+    db.createDep(name)
+      // .then(()=>console.log(`Added ${name.depName} to the database`))
       .then(()=>renderOptionList());
+  });
 }
 
 function addRole(){
@@ -147,16 +150,16 @@ function addRole(){
       value: id
     }));
 
-    inquirer.prompt(
+    prompt(
       [
         {
           type: "input",
-          message: "Choose new role:\n",
+          message: "Choose new roles Title:",
           name: "title",
         },
         {
           type: "input",
-          message: "Choose new salary:\n",
+          message: "Choose new salary:",
           name: "salary",
         },
         {
@@ -173,94 +176,102 @@ function addRole(){
       .then(()=>renderOptionList());
   })
 }
-// runs when "add an employee chosen"
+// runs when "add an employee" chosen
 function addNewEmp(){
-  inquirer.prompt(
+  prompt(
     [{
-      message: "Enter new employees first name:\n",
-      name: "first",
+      message: "Enter new employees first name:",
+      name: "first_name",
     },
     {
-      message: "Enter new employees last name:\n",
-      name: "last",
-    },]
-  )
+      message: "Enter new employees last name:",
+      name: "last_name",
+    },
+  ])
   .then((response)=>{
-    let empFName = response.first;
-    let empLName = response.last;
+    let firstName = response.first_name;
+    let lastName = response.last_name;
   
     db.queryAllRoles()
-      .then(([response]) => {
-        const roles = response.map(({id,title})=>({
+      .then(([rows]) => {
+        let roles = rows;
+        const roleOptions = roles.map(({id,title})=>({
           name: title,
           value: id
         }));
-        inquirer.prompt(
-          [{
+        prompt(
+          {
             type: "list",
             message: "Choose the new Employee's role:\n",
-            name: "role",
-            choices: roles
-          },]
-        )
-        .then(response=>{
-          let newEmpRole = response.role;
+            name: "roleId",
+            choices: roleOptions,
+          })
+        .then(response => {
+          let roleId = response.roleId;
           db.queryAllEmps()
-            .then(([response])=> {
-              const employees = response.map(({id,first_name,last_name})=>({
+            .then(([rows]) => {
+              let employees = rows;
+              const manaOptions = employees.map(({id,first_name,last_name})=>({
                 name: `${first_name} ${last_name}`,
-                value: id
+                value: id,
               }));
-              inquirer.prompt(
-                [{
+              prompt(
+                {
                   type: "list",
                   message: "Who is the manager of the new Employee?\n",
-                  name: "manager",
-                  choices: employees,
-                },]
-              )
-              .then(response =>{
-                let empManager = response.manager
-                db.queryNewEmp(empFName,empLName,newEmpRole,empManager)
+                  name: "managerId",
+                  choices: manaOptions,
+                })
+              .then(response => {
+                let employee = {
+                  manager_id: response.managerId,
+                  role_id: roleId,
+                  first_name: firstName,
+                  last_name: lastName   
+                }
+              db.queryNewEmp(employee);
               })
-              .then(()=>renderOptionList());
-            });
-        });
-      });
-  });
+              .then(() => console.log(
+                `${firstName} ${lastName} added to the database`
+              ))
+              .then(()=>renderOptionList())
+            })
+          })
+      })
+  })
 }
-
 
 function updEmpRole() {
   db.queryAllEmps()
-    .then(([response]) => {
-      const empNewRole = response.map(({ id, first_name, last_name }) => ({
+    .then(([rows]) => {
+      let employees = rows;
+      const empOptions = employees.map(({ id, first_name, last_name }) => ({
         name: `${first_name} ${last_name}`,
         value: id
-      }))
-      inquirer.prompt(
+      }));
+      prompt(
         [{
           type: "list",
-          name: "employee",
-          message: "Enter employees name to update role:\n",
-          choices: empNewRole
+          name: "employeeId",
+          message: "Choose employee to update role:\n",
+          choices: empOptions
           }
-        ]
-      )
-      .then((response) => {
-        let empId = response.employee;
+      ])
+      .then(response => {
+        let employeeId = response.employeeId;
         db.queryAllRoles()
-          .then(([response]) => {
-            const empOptions = response.map(({ id, title }) => ({
+          .then(([rows]) => {
+            let roles = rows;
+            const roleOptions = roles.map(({ id, title }) => ({
               name: title,
               value: id
-            }))
-            inquirer.prompt([
+            }));
+            prompt([
               {
                 type: "list",
-                message: "Choose a role for this employee:",
-                choices: roles,
-                name: "role",
+                message: "Choose a role for this employee:\n",
+                choices: roleOptions,
+                name: "roleId",
               }
             ])
               .then(response => db.queryUpdRole(empId, response.role))
