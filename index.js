@@ -42,6 +42,18 @@ const options = [
               value: "UPDATE_EMPLOYEE_ROLE",
           },
           {
+              name: "Fire an Employee",
+              value: "YOURE_FIRED",
+          },
+          {
+              name: "Eliminate a Department",
+              value: "DEPARTMENT_ELIMINATED",
+          },
+          {
+              name: "Remove a Role Title",
+              value: "DELETE_ROLE",
+          },
+          {
               name: "Quit",
               value: "QUIT",
           },
@@ -89,6 +101,15 @@ function renderOptionList(){
         break;
       case "UPDATE_EMPLOYEE_ROLE":
         updEmpRole();
+        break;
+      case "YOURE_FIRED":
+        fireEmployee();
+        break;
+      case "DEPARTMENT_ELIMINATED":
+        depElimination();
+        break;
+      case "DELETE_ROLE":
+        delRole();
         break;
       default:
         quit();
@@ -277,6 +298,51 @@ function updEmpRole() {
       })
   })
 }
+
+function fireEmployee() {
+  db.queryAllEmps()
+    .then(([rows])=>{
+    let employees = rows;
+    const empOptions = employees.map(({ id,first_name,last_name})=>({
+      name: `${first_name} ${last_name}`,
+      value: id
+    }));
+    prompt([
+      {
+        type: "list",
+        name: "empId",
+        message: "Which employee do you want to remove?",
+        choices: empOptions
+      }
+    ])
+      .then(response => db.fireEmployee(response.empId))
+      .then(() => console.log("Removed employee from the database"))
+      .then(() => renderOptionList())
+  })
+}
+
+function depElimination() {
+  db.queryAllDeps()
+    .then(([rows])=>{
+    let employees = rows;
+    const empOptions = employees.map(({ id,first_name,last_name})=>({
+      name: `${first_name} ${last_name}`,
+      value: id
+    }));
+    prompt([
+      {
+        type: "list",
+        name: "empId",
+        message: "Which employee do you want to remove?",
+        choices: empOptions
+      }
+    ])
+      .then(response => db.fireEmployee(response.empId))
+      .then(() => console.log("Removed employee from the database"))
+      .then(() => renderOptionList())
+  })
+}
+
 
 function quit(){
   console.log("Have a good time!");
