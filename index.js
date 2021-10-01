@@ -1,78 +1,129 @@
-const inquirer = require('inquirer');
+const { prompt } = require('inquirer');
 const db = require("./db/index.js");
 require('console.table');
 
 
-init()
-  
-function init(){
-  renderOptionList();
-}
-
-function renderOptionList() {
-  inquirer.prompt([
-    {
+const options = [
+  {
       type: "list",
-      name: "options",
+      name: "choice",
       message: "Please select from the following:\n",
       choices: [
-        "View All Departments",
-        "View All Roles",
-        "View All Employees",
-        "Add a Department",
-        "Add a Role",
-        "Add an Employee",
-        "Update an Employee Role",
-        "Quit"],
-      },
+          {
+              name: "View All Departments",
+              value: "VIEW_DEPARTMENTS",
+          },
+          {
+              name: "View All Roles",
+              value: "VIEW_ROLES",
+          },
+          {
+              name: "View All Employees",
+              value: "VIEW_EMPLOYEES",
+          },
+          {
+              name: "Add a Department",
+              value: "ADD_DEPARTMENT",
+          },
+          {
+              name: "Add a Role",
+              value: "ADD_ROLE",
+          },
+          {
+              name: "Add an Employee",
+              value: "ADD_EMPLOYEE",
+          },
+          {
+              name: "Update an Employee Role",
+              value: "UPDATE_EMPLOYEE_ROLE",
+          },
+          {
+              name: "Quit",
+              value: "QUIT",
+          },
+      ],
+  },
+];
+
+init()
+// runs on node index.js
+// activates renderOptionList fxn
+function init(){
+  console.log("Welcome to Employee-Tracker");
+  renderOptionList();
+}
+// triggered by init this begins rendering prompts
+// function renderOptionList() {
+//   // provides functionality to prompt
+//   // displays the message/choices in a list
+//   prompt(
+//     [{
+//       type: "list",
+//       name: "options",
+//       message: "Please select from the following:\n",
+//       choices: [
+//         "View All Departments",
+//         "View All Roles",
+//         "View All Employees",
+//         "Add a Department",
+//         "Add a Role",
+//         "Add an Employee",
+//         "Update an Employee Role",
+//         "Quit"],
+//       },
   // created switch cases for the roles
-  ]).then((response) => {
-    switch(response.options) {
-      case "View All Departments":
+  // case = visual options
+function renderOptionList(){
+  prompt(options).then((res) => {
+    let choice = res.choice;
+    switch(choice) {
+      case "VIEW_DEPARTMENTS":
+    // if "View all departments" is chosen from earlier list 'showAllDeps()' will be called
         showAllDeps();
         break;
-      case "View All Roles":
+      case "VIEW_ROLES":
         showAllRoles();
         break;
-      case "View All Employees":
+      case "VIEW_EMPLOYEES":
         showAllEmps();
         break;
-      case "Add a Department":
+      case "ADD_DEPARTMENT":
         addDep();
         break;
-      case "Add a Role":
+      case "ADD_ROLE":
         addRole();
         break;
-      case "Add an Employee":
+      case "ADD_EMPLOYEE":
         addNewEmp();
         break;
-      case "Update an Employee Role":
+      case "UPDATE_EMPLOYEE_ROLE":
         updEmpRole();
         break;
       default:
         quit();
       }
 		}
-  )
+  );
 }
 
+// when showAllDeps() is called this fxn runs a database query
 function showAllDeps(){
-  db.findAllDeps().then(([response]) =>{
-    console.table(response)
+  db.queryAllDeps().then(([rows])=>{
+    let depts = rows;
+    console.log("\n");
+    console.table(depts);
   }).then(()=>renderOptionList());
 }
 
-function showAllRoles() {
-  db.findAllRoles()
-    .then(([response]) => {
-      console.table(response)
+function showAllRoles(){
+  db.queryAllRoles().then(([rows])=>{
+      console.table(rows)
     }).then(() => renderOptionList());
 }
 
 function showAllEmps() {
-  db.findAllEmps()
-    .then(([response]) => {
-      console.table(response)
+  db.queryAllEmps().then(([rows]) => {
+      console.table(rows)
     }).then(() => renderOptionList());
 }
 
@@ -80,7 +131,7 @@ function addDep() {
   inquirer.prompt([
     {
       name: "name",
-      message: "Name your department\n"
+      message: "Name your new department:\n"
     },
   ])
   .then((response) =>
@@ -89,7 +140,7 @@ function addDep() {
 }
 
 function addRole(){
-  db.findAllDeps()
+  db.queryAllDeps()
   .then(([response]) =>{
     const departments = response.map(({id,depName})=>({
       name: depName,
@@ -100,17 +151,17 @@ function addRole(){
       [
         {
           type: "input",
-          message: "Choose new role\n",
+          message: "Choose new role:\n",
           name: "title",
         },
         {
           type: "input",
-          message: "Choose new salary\n",
+          message: "Choose new salary:\n",
           name: "salary",
         },
         {
           type: "list",
-          message: "Choose new department\n",
+          message: "Choose new department:\n",
           choices: departments,
           name: "depId",
         }
@@ -122,15 +173,15 @@ function addRole(){
       .then(()=>renderOptionList());
   })
 }
-
+// runs when "add an employee chosen"
 function addNewEmp(){
   inquirer.prompt(
     [{
-      message: "Enter new employees first name\n",
+      message: "Enter new employees first name:\n",
       name: "first",
     },
     {
-      message: "Enter new employees last name\n",
+      message: "Enter new employees last name:\n",
       name: "last",
     },]
   )
@@ -138,7 +189,7 @@ function addNewEmp(){
     let empFName = response.first;
     let empLName = response.last;
   
-    db.findAllRoles()
+    db.queryAllRoles()
       .then(([response]) => {
         const roles = response.map(({id,title})=>({
           name: title,
@@ -147,20 +198,19 @@ function addNewEmp(){
         inquirer.prompt(
           [{
             type: "list",
-            message: "Choose the new Employee's role\n",
+            message: "Choose the new Employee's role:\n",
             name: "role",
             choices: roles
           },]
         )
         .then(response=>{
           let newEmpRole = response.role;
-          db.findAllEmps()
+          db.queryAllEmps()
             .then(([response])=> {
               const employees = response.map(({id,first_name,last_name})=>({
                 name: `${first_name} ${last_name}`,
                 value: id
               }));
-  
               inquirer.prompt(
                 [{
                   type: "list",
@@ -171,26 +221,18 @@ function addNewEmp(){
               )
               .then(response =>{
                 let empManager = response.manager
-                db.createEmp(empFirstName,empLastName,newEmpRole,empManager)
+                db.queryNewEmp(empFName,empLName,newEmpRole,empManager)
               })
               .then(()=>renderOptionList());
-            }
-            
-            
-            
-            )
-
-
-
-        })
-      }
-
+            });
+        });
+      });
+  });
 }
 
 
-
 function updEmpRole() {
-  db.findAllEmps()
+  db.queryAllEmps()
     .then(([response]) => {
       const empNewRole = response.map(({ id, first_name, last_name }) => ({
         name: `${first_name} ${last_name}`,
@@ -200,36 +242,36 @@ function updEmpRole() {
         [{
           type: "list",
           name: "employee",
-          message: "Enter employees name to update role",
+          message: "Enter employees name to update role:\n",
           choices: empNewRole
           }
         ]
       )
       .then((response) => {
         let empId = response.employee;
-        db.findAllRoles()
+        db.queryAllRoles()
           .then(([response]) => {
-            const roles = response.map(({ id, title }) => ({
+            const empOptions = response.map(({ id, title }) => ({
               name: title,
               value: id
             }))
             inquirer.prompt([
               {
                 type: "list",
-                message: "Choose a role for this employee",
+                message: "Choose a role for this employee:",
                 choices: roles,
                 name: "role",
               }
             ])
-              .then(response => db.updateEmpRole(empId, response.role))
+              .then(response => db.queryUpdRole(empId, response.role))
               .then(() => console.log("Updated employee's role"))
               .then(() => renderOptionList());
           });
       })
   })
-
+}
 
 function quit(){
-  console.log("Have a nice Day!");
-  process.exit();
+  console.log("Have a good time!");
+  process.exit()
 }
