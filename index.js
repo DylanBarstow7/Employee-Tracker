@@ -3,6 +3,8 @@ const db = require("./db/index.js");
 require('console.table');
 
 
+// list of available prompt options
+// displays the message/choices seen by user in a list
 const options = [
   {
       type: "list",
@@ -11,7 +13,9 @@ const options = [
       choices: [
           {
               name: "View All Departments",
+              // user sees name attribute
               value: "VIEW_DEPARTMENTS",
+              // value is sent into switch statement
           },
           {
               name: "View All Roles",
@@ -52,33 +56,20 @@ function init(){
   console.log("Welcome to Employee-Tracker");
   renderOptionList();
 }
-// triggered by init this begins rendering prompts
-// function renderOptionList() {
-//   // provides functionality to prompt
-//   // displays the message/choices in a list
-//   prompt(
-//     [{
-//       type: "list",
-//       name: "options",
-//       message: "Please select from the following:\n",
-//       choices: [
-//         "View All Departments",
-//         "View All Roles",
-//         "View All Employees",
-//         "Add a Department",
-//         "Add a Role",
-//         "Add an Employee",
-//         "Update an Employee Role",
-//         "Quit"],
-//       },
-  // created switch cases for the roles
-  // case = visual options
+
+// triggered by init this begins rendering prompt
+// provides functionality to prompt
+// prompt displays questions to user
 function renderOptionList(){
-  prompt(options).then((res) => {
-    let choice = res.choice;
+  // initiates 'options' fxn
+  // is returned with a value: response from choice list
+  prompt(options).then((response) => {
+    let choice = response.choice;
+    // switch case activates next fxn based on choice made in options list
+    // if "View all departments" option is chosen from the prompt,
+    // value of "VIEW_DEPARTMENTS" is used to call 'showAllDeps()' fxn
     switch(choice) {
       case "VIEW_DEPARTMENTS":
-    // if "View all departments" is chosen from earlier list 'showAllDeps()' will be called
         showAllDeps();
         break;
       case "VIEW_ROLES":
@@ -106,38 +97,44 @@ function renderOptionList(){
   );
 }
 
-// when showAllDeps() is called this fxn runs a database query
+// activated via chosen case "VIEW_DEPARTMENTS"
 function showAllDeps(){
+  // when showAllDeps() is called this fxn runs a database query
   db.queryAllDeps().then(([response])=>{
+    // once we receive a response from queryAllDeps we declare the response into a local variable, here it's named 'departments'
     let departments = response;
-    console.log("\n");
+    // displays db table from response into terminal
     console.table(departments);
+  // then return to the original questions list
   }).then(()=>renderOptionList());
 }
 
+// process identical to Deps with different db query calls
 function showAllRoles(){
   db.queryAllRoles().then(([response])=>{
       console.table(response)
     }).then(() => renderOptionList());
 }
 
+// process identical to Deps with different db query calls
 function showAllEmps() {
   db.queryAllEmps().then(([response]) => {
       console.table(response)
     }).then(() => renderOptionList());
 }
 
+// add-department fxn 
 function addDep() {
   prompt([
     {
-      name: "depName",
-      message: "Name your new department:"
+      message: "Name your new department:",
+      name: "depName"
     },
   ])
   .then((response) => {
     let name = response;
     db.createDep(name)
-      // .then(()=>console.log(`Added ${name.depName} to the database`))
+      .then(()=>console.log(`Added ${name.depName} to the database`))
       .then(()=>renderOptionList());
   });
 }
@@ -149,7 +146,6 @@ function addRole(){
       name: depName,
       value: id
     }));
-
     prompt(
       [
         {
