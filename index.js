@@ -165,8 +165,9 @@ function addDep() {
 
 function addRole(){
   db.queryAllDeps()
-  .then(([response]) =>{
-    const departments = response.map(({id,depName})=>({
+  .then(([rows]) =>{
+    let departments = rows;
+    const depOptions = departments.map(({id,depName})=>({
       name: depName,
       value: id
     }));
@@ -185,13 +186,13 @@ function addRole(){
         {
           type: "list",
           message: "Choose new department:\n",
-          choices: departments,
-          name: "depId",
+          choices: depOptions,
+          name: "department_id",
         }
       ]
     )
-      .then((response)=> {
-        db.createRole(response.title,response.salary,response.depId)
+      .then(roles=> {
+        db.createRole(roles)
       })
       .then(()=>renderOptionList());
   })
@@ -214,8 +215,8 @@ function addNewEmp(){
   
     db.queryAllRoles()
       .then(([rows]) => {
-        let roles = rows;
-        const roleOptions = roles.map(({id,title})=>({
+        let role = rows;
+        const roleOptions = role.map(({id,title})=>({
           name: title,
           value: id
         }));
@@ -235,6 +236,7 @@ function addNewEmp(){
                 name: `${first_name} ${last_name}`,
                 value: id,
               }));
+              managerOptions.unshift({ name: "None", value: null });
               prompt(
                 {
                   type: "list",
@@ -243,13 +245,13 @@ function addNewEmp(){
                   choices: manaOptions,
                 })
               .then(response => {
-                let employee = {
+                let employees = {
                   manager_id: response.managerId,
                   role_id: roleId,
                   first_name: firstName,
                   last_name: lastName   
                 }
-              db.queryNewEmp(employee);
+              db.queryNewEmp(employees);
               })
               .then(() => console.log(
                 `${firstName} ${lastName} added to the database`

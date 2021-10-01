@@ -20,11 +20,9 @@ CREATE TABLE employee (
   first_name VARCHAR(30) NOT NULL,
   last_name VARCHAR(30) NOT NULL,
   role_id INT NOT NULL,
-  INDEX role_index (role_id),
-  CONSTRAINT fk_role_id FOREIGN KEY (role_id)
-  REFERENCES roles(id),
+  INDEX role_ind (role_id),
+  CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
   manager_id INT,
-  INDEX manager_index (manager_id),
-  CONSTRAINT fk_manager_id FOREIGN KEY (manager_id)
-  REFERENCES employee(id)
+  INDEX manager_ind (manager_id),
+  CONSTRAINT fk_manager FOREIGN KEY (manager_id) REFERENCES employee(id) ON DELETE SET NULL
 );
