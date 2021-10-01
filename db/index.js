@@ -1,5 +1,6 @@
 const connection = require('./connection');
 
+
 // creating general Database class
 class Database {
 	constructor(connection) {
@@ -7,14 +8,14 @@ class Database {
 	}
 	queryAllDeps(){
 		console.log("hello");
-		return this.connection.query(`
+		return this.connection.promise().query(`
 			SELECT
 			department.id, department.depName
 			FROM
 			department;`)
 		}
 	queryAllRoles() {
-		return this.connection.query(`
+		return this.connection.promise().query(`
 			SELECT roles.title, roles.id, department.depName, roles.department_id, roles.salary
 			FROM roles
 			JOIN department ON roles.department_id = department.id
@@ -23,7 +24,7 @@ class Database {
 	}
 
 	queryAllEmps() {
-		return this.connection.query(`
+		return this.connection.promise().query(`
 			SELECT employee.id, employee.first_name, employee.last_name, roles.title, department.depName, roles.salary, employee.manager_id
 			FROM employee
 			JOIN roles ON employee.role_id = roles.id
@@ -33,26 +34,26 @@ class Database {
 	}
 
 	createDep(newDep) {
-		return this.connection.query(`
+		return this.connection.promise().query(`
 		INSERT INTO department(depName)
 		VALUES (?)`,newDep)
 	}
 
 	createRole(title,salary,depId) {
-		return this.connection.query(`
+		return this.connection.promise().query(`
 		INSERT INTO roles(title,salary,department_id)
 		VALUES (?,?,?)`,[title,salary,depId])
 	}
 
 	
 	queryNewEmp(first,last,role,manager){
-		return this.connection.query(`
+		return this.connection.promise().query(`
 		INSERT INTO employee(first_name,last_name,department_id)
 		VALUES (?,?,?,?)`,[first,last,role,manager])
 	}
 
 	queryUpdRole(roleId,empId) {
-		return this.connection.query(`
+		return this.connection.promise().query(`
 			UPDATE employee 
 			SET role_id = ? 
 			WHERE id = ?;`,
