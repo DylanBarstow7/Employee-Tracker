@@ -245,14 +245,14 @@ function updEmpRole() {
   db.queryAllEmps()
     .then(([rows]) => {
       let employees = rows;
-      const empOptions = employees.map(({ id, first_name, last_name }) => ({
+      const empOptions = employees.map(({id,first_name,last_name }) => ({
         name: `${first_name} ${last_name}`,
         value: id
       }));
       prompt(
         [{
           type: "list",
-          name: "employeeId",
+          name: "empId",
           message: "Choose employee to update role:\n",
           choices: empOptions
           }
