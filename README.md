@@ -8,8 +8,9 @@
 ## Description
 Employee-Tracker is an application that allows you to access a database of employees, departments, and roles.
 
-![alt text]()
-![alt text]()
+![alt text](https://github.com/DylanBarstow7/Employee-Tracker/blob/master/assets/employeeTrackerpic1.PNG)
+![alt text](https://github.com/DylanBarstow7/Employee-Tracker/blob/master/assets/employeeTrackerpic2.PNG)
+
 ## Installation
 Fork or clone the repository.  Open your terminal and access the root folder for this application.  Once there run 'npm i' to install all necessary packages.
 Packages include: MySQL2, Inquirer, and console.table packages.
