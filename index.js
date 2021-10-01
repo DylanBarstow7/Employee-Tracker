@@ -130,7 +130,7 @@ function showAllEmps() {
 function addDep() {
   prompt([
     {
-      name: "name",
+      name: "depName",
       message: "Name your new department:"
     },
   ])
