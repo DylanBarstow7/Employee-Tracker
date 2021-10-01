@@ -1,21 +1,18 @@
-DROP DATABASE IF EXISTS employees;
-CREATE DATABASE employees;
+DROP DATABASE IF EXISTS employees_db;
+CREATE DATABASE employees_db;
 
-USE employees;
+USE employees_db;
 
 CREATE TABLE department (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  depName VARCHAR(30) UNIQUE NOT NULL
+  depName VARCHAR(30) NOT NULL
 );
 
 CREATE TABLE roles (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  title VARCHAR(30) NOT NULL,
-  salary DECIMAL NOT NULL,
-  department_id INT NOT NULL,
-  INDEX department_index (department_id),
-  CONSTRAINT fk_department_id FOREIGN KEY (department_id)
-  REFERENCES department(id)
+    title VARCHAR(30) NOT NULL,
+    salary DECIMAL NOT NULL,
+    department_id INT NOT NULL
 );
 
 CREATE TABLE employee (
