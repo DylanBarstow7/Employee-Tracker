@@ -6,7 +6,10 @@ class Database {
 	constructor(connection) {
     this.connection = connection;
 	}
+
+	// FULL TABLE RETURNS
 	queryAllDeps(){
+		// 
 		return this.connection.promise().query(`
 			SELECT
 			department.id, department.depName
@@ -31,18 +34,17 @@ class Database {
 			employee.id ASC;`);
 	}
 
+	// CREATION
 	createDep(department) {
 		return this.connection.promise().query(`
 		INSERT INTO department SET ?`, department);
 	}
 
-	createRole(title,salary,depId) {
+	createRole(roles) {
 		return this.connection.promise().query(`
-		INSERT INTO roles(title,salary,department_id)
-		VALUES (?,?,?)`,[title,salary,depId]);
+		INSERT INTO roles SET ?`, roles);
 	}
 
-	
 	queryNewEmp(employee){
 		return this.connection.promise().query(`
 		INSERT INTO employee SET ?`, employee);
@@ -56,4 +58,10 @@ class Database {
 			[roleId,empId]);
 	}
 }
+
+// DELETE FROM department WHERE id = ?;
+// DELETE FROM roles WHERE id = ?;
+// DELETE FROM employee WHERE id = ?;
+
+
 module.exports = new Database(connection);
