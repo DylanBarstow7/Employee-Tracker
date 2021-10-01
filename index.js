@@ -109,7 +109,7 @@ function renderOptionList(){
         depElimination();
         break;
       case "DELETE_ROLE":
-        delRole();
+        deleteRole();
         break;
       default:
         quit();
@@ -124,6 +124,7 @@ function showAllDeps(){
   db.queryAllDeps().then(([response])=>{
     // once we receive a response from queryAllDeps we declare the response into a local variable, here it's named 'departments'
     let departments = response;
+    console.log("\n");
     // displays db table from response into terminal
     console.table(departments);
   // then return to the original questions list
@@ -133,6 +134,7 @@ function showAllDeps(){
 // process identical to Deps with different db query calls
 function showAllRoles(){
   db.queryAllRoles().then(([response])=>{
+      console.log("\n");
       console.table(response)
     }).then(() => renderOptionList());
 }
@@ -140,6 +142,7 @@ function showAllRoles(){
 // process identical to Deps with different db query calls
 function showAllEmps() {
   db.queryAllEmps().then(([response]) => {
+      console.log("\n");
       console.table(response)
     }).then(() => renderOptionList());
 }
@@ -299,7 +302,9 @@ function updEmpRole() {
   })
 }
 
+// deletion fxn's begin
 function fireEmployee() {
+  console.log("\n");
   db.queryAllEmps()
     .then(([rows])=>{
     let employees = rows;
@@ -311,34 +316,58 @@ function fireEmployee() {
       {
         type: "list",
         name: "empId",
-        message: "Which employee do you want to remove?",
+        message: "Which employee do you want to fire?",
         choices: empOptions
       }
     ])
-      .then(response => db.fireEmployee(response.empId))
-      .then(() => console.log("Removed employee from the database"))
+      .then(response => db.fireEmpNum(response.empId))
+      .then(() => console.log(`Removed employee from the database`))
       .then(() => renderOptionList())
   })
 }
 
 function depElimination() {
+  console.log("\nWarning: This will also remove associated roles and employees");
   db.queryAllDeps()
     .then(([rows])=>{
-    let employees = rows;
-    const empOptions = employees.map(({ id,first_name,last_name})=>({
-      name: `${first_name} ${last_name}`,
+    let departments = rows;
+    const depOptions = departments.map(({id,name})=>({
+      name: name,
       value: id
     }));
     prompt([
       {
         type: "list",
-        name: "empId",
-        message: "Which employee do you want to remove?",
-        choices: empOptions
+        name: "depId",
+        message: "Which department do you want to remove?",
+        choices: depOptions
       }
     ])
-      .then(response => db.fireEmployee(response.empId))
-      .then(() => console.log("Removed employee from the database"))
+      .then(response => db.eliminateDep(response.depId))
+      .then(() => console.log("Removed department from the database"))
+      .then(() => renderOptionList())
+  })
+}
+
+function deleteRole() {
+  console.log("\nWarning: This will also remove all associated employees");
+  db.queryAllRoles()
+    .then(([rows])=>{
+    let role = rows;
+    const roleOptions = role.map(({id,title})=>({
+      name: title,
+      value: id
+    }));
+    prompt([
+      {
+        type: "list",
+        name: "roleId",
+        message: "Which role do you want to remove?",
+        choices: roleOptions
+      }
+    ])
+      .then(response => db.removeRole(response.roleId))
+      .then(() => console.log("Removed role from the database"))
       .then(() => renderOptionList())
   })
 }

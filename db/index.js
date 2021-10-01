@@ -58,23 +58,21 @@ class Database {
 			[roleId,empId]);
 	}
 
-	fireEmployee(empId){
+	// DELETION
+	fireEmpNum(empId){
 		return this.connection.promise().query(`
 		DELETE FROM employee WHERE id = ?`, empId);
 	}
 
-	// fireEmployee(employee){
-	// 	return this.connection.promise().query(`
-	// 	DELETE FROM employee WHERE id = ?`, employee);
-	// }
+	eliminateDep(depId){
+		return this.connection.promise().query(`
+		DELETE FROM department WHERE id = ?`, depId);
+	}
 
-	// fireEmployee(employee){
-	// 	return this.connection.promise().query(`
-	// 	DELETE FROM employee WHERE id = ?`, employee);
-	// }
-// DELETE FROM department WHERE id = ?;
-// DELETE FROM roles WHERE id = ?;
-// DELETE FROM employee WHERE id = ?;
+	removeRole(roleId){
+		return this.connection.promise().query(`
+		DELETE FROM roles WHERE id = ?`, roleId);
+	}
 }
 
 module.exports = new Database(connection);
