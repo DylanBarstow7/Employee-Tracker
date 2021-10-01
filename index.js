@@ -236,7 +236,7 @@ function addNewEmp(){
                 name: `${first_name} ${last_name}`,
                 value: id,
               }));
-              managerOptions.unshift({ name: "None", value: null });
+              manaOptions.unshift({ name: "None", value: null });
               prompt(
                 {
                   type: "list",
