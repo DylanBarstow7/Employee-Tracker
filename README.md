@@ -1,4 +1,5 @@
 # Employee-Tracker
+
 ## Table of Contents
 - [Description](#Description)
 - [Installation](#Installation)
@@ -10,10 +11,17 @@ Employee-Tracker is an application that allows you to access a database of emplo
 
 ![alt text](https://github.com/DylanBarstow7/Employee-Tracker/blob/master/assets/employeeTrackerpic1.PNG)
 ![alt text](https://github.com/DylanBarstow7/Employee-Tracker/blob/master/assets/employeeTrackerpic2.PNG)
+
 ## Installation
 Fork or clone the repository.  Open your terminal and access the root folder for this application.  Once there run 'npm i' to install all necessary packages.
 
 Packages include: MySQL2, Inquirer, and console.table packages.
+
+## Installation
+Fork or clone the repository.  Open your terminal and access the root folder for this application.  Once there run 'npm i' to install all necessary packages.
+Packages include: 
+
+MySQL2, Inquirer, and console.table packages.
 
 ## Usage
 To active this application you must enter either of the following into your terminal:
@@ -21,6 +29,7 @@ To active this application you must enter either of the following into your term
 'node index' or 'npm start'
 
 Audio Tutorial: https://watch.screencastify.com/v/1I8xh6m9NaCUeRkpQAtt
+
 ## Contact
 For enquiries contact me at dcbarstow7@gmail.com.
 
