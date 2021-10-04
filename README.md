@@ -23,6 +23,7 @@ Packages include: MySQL2, Inquirer, and console.table packages.
 
 ## Installation
 
+
 Fork or clone the repository.  Open your terminal and access the root folder for this application.  
 
 Run 'npm i'
@@ -38,6 +39,7 @@ Then type 'source db/seed.sql;'
 Once the querys are complete you may quit mysql by typing
 
 'quit'
+
 
 ## Usage
 
